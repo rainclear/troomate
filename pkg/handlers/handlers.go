@@ -43,7 +43,3 @@ func (m *Repository) Accounts(w http.ResponseWriter, r *http.Request) {
 func (m *Repository) NewAccount(w http.ResponseWriter, r *http.Request) {
 	render.RenderTemplate(w, "new_account.page.html", &models.TemplateData{})
 }
-
-func (m *Repository) ModifyAccount(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, "modify_account.page.html", &models.TemplateData{})
-}
