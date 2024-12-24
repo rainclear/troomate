@@ -5,8 +5,8 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/rainclear/accroo/pkg/config"
-	"github.com/rainclear/accroo/pkg/handlers"
+	"github.com/rainclear/troomate/pkg/config"
+	"github.com/rainclear/troomate/pkg/handlers"
 )
 
 func routes(app *config.AppConfig) http.Handler {
@@ -17,7 +17,9 @@ func routes(app *config.AppConfig) http.Handler {
 
 	mux.Get("/", handlers.Repo.Home)
 	mux.Get("/about", handlers.Repo.About)
-	mux.Get("/account_types", handlers.Repo.AccountTypes)
+	mux.Get("/accounts", handlers.Repo.Accounts)
+	mux.Get("/new_account", handlers.Repo.ModifyAccount)
+	mux.Get("/modify_account", handlers.Repo.ModifyAccount)
 
 	fileServer := http.FileServer(http.Dir("./static/"))
 	mux.Handle("/static/*", http.StripPrefix("/static", fileServer))

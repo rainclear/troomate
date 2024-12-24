@@ -1,6 +1,7 @@
 package config
 
 import (
+	"database/sql"
 	"log"
 )
 
@@ -8,4 +9,7 @@ import (
 type AppConfig struct {
 	InfoLog      *log.Logger
 	InProduction bool
+	DBPath       string
+	Db           *sql.DB
+	Accounts     []string
 }

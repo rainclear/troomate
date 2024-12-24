@@ -1,0 +1,75 @@
+{{template "base" .}}
+
+{{define "content"}}
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h1>Add a New Account or Edit an Existing Account</h1>
+            </div>
+        </div>
+        <div class="row">
+            <form class="row g-3">
+                <div class="col-md-6">
+                  <label for="inputAccountName" class="form-label">Account Name</label>
+                  <input type="text" class="form-control" id="inputAccountName" placeholder="Account Name">
+                </div>
+                <div class="col-md-3">
+                  <label for="inputInstitution" class="form-label">Institution</label>
+                  <input type="text" class="form-control" id="inputInstitution" placeholder="Institution">
+                </div>
+                <div class="col-md-3">
+                    <label for="inputCurrency"  class="form-label">Currency</label>
+                    <select id="inputCurrency" class="form-select">
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="inputAccountNumber" class="form-label">Account Number</label>
+                    <input type="text" class="form-control" id="inputAccountNumber" placeholder="Account Number">
+                </div>
+                <div class="col-md-3">
+                    <label for="inputAccountType" class="form-label">Account Type</label>
+                    <select id="inputAccountType" class="form-select">
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="inputAccountCategory" class="form-label">Account Category</label>
+                    <select id="inputAccountCategory" class="form-select">
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                    </select>
+                </div>
+                <div class="date col-md-6">
+                    <label for="inputOpeningDate" class="form-label">Opening Date</label>
+                    <input type="date" class="form-control date" id="inputOpeningDate">
+                </div>
+                <div class="col-md-6">
+                    <label for="inputOpeningBalance" class="form-label">Opening Balance</label>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">$</span>
+                        <input type="number" value="0.00" min="0" step="0.01" data-number-to-fixed="2" data-number-stepfactor="100" class="form-control currency" id="inputOpeningBalance">
+                    </div>                    
+                </div>
+                <div class="col-12">
+                    <label for="notes" class="form-label">Notes for the Account</label>
+                    <textarea class="form-control" id="inputNotes" rows="2"></textarea>
+                </div>                                
+                <div class="col-12">
+                  <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{{end}}

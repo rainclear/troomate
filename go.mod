@@ -1,4 +1,4 @@
-module github.com/rainclear/accroo
+module github.com/rainclear/troomate
 
 go 1.22.5
 

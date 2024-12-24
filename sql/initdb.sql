@@ -1,96 +1,40 @@
-CREATE TABLE Currencies (
-  id INTEGER PRIMARY KEY,
-  Currency varchar(4) UNIQUE NOT NULL
+-- Currently one owner per db, so only one onwer record in one profile
+CREATE TABLE Owners       (
+  id                      INTEGER PRIMARY KEY,
+  OwnerName               VARCHAR(512) UNIQUE NOT NULL,
+  OwnerBirthDate          DATE NOT NULL Default '1900-01-01',
+  TFSAStartDate           DATE NOT NULL Default '2009-01-01',
+  TFSAEligibleDate        DATE NOT NULL Default '2009-01-01',
+  Notes                   TEXT
 );
 
-CREATE TABLE AccountTypes (
-  id INTEGER PRIMARY KEY,
-  AccountType varchar(256) UNIQUE NOT NULL
-);
+CREATE TABLE Accounts     (
+  id                      INTEGER PRIMARY KEY,
+  OwnerId                 INTEGER NOT NULL,
+  AccountName             VARCHAR(512) UNIQUE NOT NULL,
+  Institution             VARCHAR(512),
+  AccountNumber           VARCHAR(512),
+  AccountNameAtCRA        VARCHAR(512) UNIQUE NOT NULL,
+  AccountType             VARCHAR(512), -- Savings, GIC, Investment, ...
+  AccountPurpose          VARCHAR(512), -- Daily, Short Term, Long Term, Retirement, ...
+  OpeningDate             DATE,
+  ClosingDate             DATE,
+  Notes                   TEXT,
 
-CREATE TABLE AccountRoles (
-  id INTEGER PRIMARY KEY,
-  AccountRole varchar(256) UNIQUE NOT NULL
-);
-
-CREATE TABLE Accounts (
-  id INTEGER PRIMARY KEY,
-  AccountName varchar(256) UNIQUE NOT NULL,
-  Balance decimal(20, 2) NOT NULL DEFAULT 0,
-  OpeningDate date NOT NULL,
-  OpeningBalance decimal(20, 2) NOT NULL DEFAULT 0,
-  AccountNumber varchar(256),
-  Currency_id int NOT NULL,
-  AccountType_id int NOT NULL,
-  AccountRole_id int NOT NULL,
-  Notes varchar(512),
-  FOREIGN KEY (Currency_id) REFERENCES Currencies(id),
-  FOREIGN KEY (AccountType_id) REFERENCES AccountTypes(id),
-  FOREIGN KEY (AccountRole_id) REFERENCES AccountRoles(id)
-);
-
-CREATE TABLE TransactionCategories (
-  id INTEGER PRIMARY KEY,
-  TransCategory varchar UNIQUE NOT NULL
-);
-
-CREATE TABLE TransactionTypes (
-  id INTEGER PRIMARY KEY,
-  TransType varchar UNIQUE NOT NULL
+  FOREIGN KEY (OwnerId)   REFERENCES Owners(id)
 );
 
 CREATE TABLE Transactions (
-  id INTEGER PRIMARY KEY,
-  Description varchar(256),
-  TransDate date NOT NULL,
-  Amount decimal(20, 2) NOT NULL DEFAULT 0,
-  FromAccount_id bigint NOT NULL,
-  ToAccount_id bigint NOT NULL CHECK(ToAccount_id <> FromAccount_id),
-  TransCategory_id int NOT NULL,
-  TransType_id int NOT NULL,
-  Notes varchar(512),
-  FOREIGN KEY (FromAccount_id) REFERENCES Accounts(id),
-  FOREIGN KEY (ToAccount_id) REFERENCES Accounts(id),
-  FOREIGN KEY (TransCategory_id) REFERENCES TransactionCategories(id),
-  FOREIGN KEY (TransType_id) REFERENCES TransactionTypes(id)
+  id                      INTEGER PRIMARY KEY,
+  TransDate               DATE NOT NULL,
+  Amount decimal(20, 2)   NOT NULL DEFAULT 0,
+  AccountId               INTEGER NOT NULL,
+  TransType               TEXT CHECK( TransType IN ('Deposit','Withdraw') ) NOT NULL DEFAULT 'Deposit',
+  Notes                   TEXT,
+
+  FOREIGN KEY (AccountId) REFERENCES Accounts(id)
 );
 
-CREATE INDEX ACCTNAME ON Accounts (AccountName);
-
-CREATE INDEX FROMACCT ON Transactions (FromAccount_id);
-
-CREATE INDEX TOACCT ON Transactions (ToAccount_id);
-
-CREATE INDEX ACCTPAIR ON Transactions (FromAccount_id, ToAccount_id);
-
-INSERT INTO Currencies (Currency) VALUES ('CAD');
-
-INSERT INTO Currencies (Currency) VALUES ('USD');
-
-INSERT INTO AccountTypes (AccountType) VALUES ('Assets');
-
-INSERT INTO AccountTypes (AccountType) VALUES ('Equity');
-
-INSERT INTO AccountTypes (AccountType) VALUES ('Expenses');
-
-INSERT INTO AccountTypes (AccountType) VALUES ('Imbalance');
-
-INSERT INTO AccountTypes (AccountType) VALUES ('Income');
-
-INSERT INTO AccountTypes (AccountType) VALUES ('Liabilities');
-
-INSERT INTO AccountRoles (AccountRole) VALUES ('Chequing');
-
-INSERT INTO AccountRoles (AccountRole) VALUES ('Savings');
-
-INSERT INTO AccountRoles (AccountRole) VALUES ('TFSA');
-
-INSERT INTO TransactionTypes (TransType) VALUES ('Expense');
-
-INSERT INTO TransactionTypes (TransType) VALUES ('Income');
-
-INSERT INTO TransactionTypes (TransType) VALUES ('Transfer');
-
-INSERT INTO TransactionCategories (TransCategory) VALUES ("Grocery");
-
-INSERT INTO TransactionCategories (TransCategory) VALUES ("Utilities");
+CREATE INDEX OWNER        ON Owners       (OwnerName);
+CREATE INDEX ACCTNAME     ON Accounts     (AccountName);
+CREATE INDEX TRANSDATE    ON Transactions (TransDate);

@@ -1,0 +1,63 @@
+{{template "base" .}}
+
+{{define "content"}}
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h1>Add a New Account or Edit an Existing Account</h1>
+            </div>
+        </div>
+        <div class="row">
+            <form class="row g-3">
+                <div class="col-md-6">
+                    <label for="inputAccountName" class="form-label">Account Name</label>
+                    <input type="text" class="form-control" id="inputAccountName" placeholder="Account Name">
+                </div>
+                <div class="col-md-3">
+                    <label for="inputInstitution" class="form-label">Institution</label>
+                    <input type="text" class="form-control" id="inputInstitution" placeholder="Institution">
+                </div>
+                <div class="col-md-3">
+                    <label for="inputAccountNumber" class="form-label">Account Number</label>
+                    <input type="text" class="form-control" id="inputAccountNumber" placeholder="Account Number">
+                </div>
+                <div class="col-md-6">
+                    <label for="inputAccountNameAtCRA" class="form-label">Account Name at CRA</label>
+                    <input type="text" class="form-control" id="inputAccountNameAtCRA" placeholder="Account Name at CRA">
+                </div>
+                <div class="col-md-3">
+                    <label for="inputAccountType" class="form-label">Account Type</label>
+                    <select id="inputAccountType" class="form-select">
+                        <option>Savings</option>
+                        <option>GIC</option>
+                        <option>Investment</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="inputAccountPurpose" class="form-label">Account Purpose</label>
+                    <select id="inputAccountPurpose" class="form-select">
+                        <option>Daily</option>
+                        <option>Short Term</option>
+                        <option>Long Term</option>
+                        <option>Retirement</option>
+                    </select>
+                </div>
+                <div class="date col-md-6">
+                    <label for="inputOpeningDate" class="form-label">Opening Date</label>
+                    <input type="date" class="form-control date" id="inputOpeningDate">
+                </div>
+                <div class="col-md-6">
+                    <label for="inputClosingDate" class="form-label">Closing Date</label>
+                    <input type="date" class="form-control date" id="inputClosingDate">
+                </div>
+                <div class="col-12">
+                    <label for="notes" class="form-label">Notes for the Account</label>
+                    <textarea class="form-control" id="inputNotes" rows="2"></textarea>
+                </div>                                
+                <div class="col-12">
+                  <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{{end}}

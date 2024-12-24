@@ -3,9 +3,9 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/rainclear/accroo/pkg/config"
-	"github.com/rainclear/accroo/pkg/models"
-	"github.com/rainclear/accroo/pkg/render"
+	"github.com/rainclear/troomate/pkg/config"
+	"github.com/rainclear/troomate/pkg/models"
+	"github.com/rainclear/troomate/pkg/render"
 )
 
 // Repo the repository used by the handlers
@@ -36,6 +36,14 @@ func (m *Repository) About(w http.ResponseWriter, r *http.Request) {
 	render.RenderTemplate(w, "about.page.html", &models.TemplateData{})
 }
 
-func (m *Repository) AccountTypes(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, "account_types.page.html", &models.TemplateData{})
+func (m *Repository) Accounts(w http.ResponseWriter, r *http.Request) {
+	render.RenderTemplate(w, "accounts.page.html", &models.TemplateData{})
+}
+
+func (m *Repository) NewAccount(w http.ResponseWriter, r *http.Request) {
+	render.RenderTemplate(w, "new_account.page.html", &models.TemplateData{})
+}
+
+func (m *Repository) ModifyAccount(w http.ResponseWriter, r *http.Request) {
+	render.RenderTemplate(w, "modify_account.page.html", &models.TemplateData{})
 }

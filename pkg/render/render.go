@@ -8,11 +8,11 @@ import (
 	"net/http"
 	"path/filepath"
 
-	"github.com/rainclear/accroo/pkg/config"
-	"github.com/rainclear/accroo/pkg/models"
+	"github.com/rainclear/troomate/pkg/config"
+	"github.com/rainclear/troomate/pkg/models"
 )
 
-var functions = template.FuncMap{}
+// var functions = template.FuncMap{}
 
 var app *config.AppConfig
 
