@@ -11,5 +11,6 @@ type AppConfig struct {
 	InProduction bool
 	DBPath       string
 	Db           *sql.DB
+	Owner        string
 	Accounts     []string
 }

@@ -26,22 +26,27 @@ func OpenDb() error {
 		return err
 	}
 
-	rows, err := db.Query("Select * from Accounts Order by id;")
+	rows, err := db.Query("Select OwnerName, TFSAEligibleDate from Owners;")
 	if err != nil {
 		return err
 	}
 
 	for rows.Next() {
-		var account string
-		if err = rows.Scan(&account); err != nil {
+		var ownername string
+		var eligibleDate string
+		if err = rows.Scan(&ownername, &eligibleDate); err != nil {
 			return err
 		}
-		app.Accounts = append(app.Accounts, account)
+		app.Owner = ownername
+		app.Owner += " from "
+		app.Owner += eligibleDate
 	}
 
-	if err = rows.Err(); err != nil {
+	accounts, err := ListAccounts()
+	if err != nil {
 		return err
 	}
+	app.Accounts = accounts
 
 	fi, err := os.Stat(app.DBPath)
 	if err != nil {
@@ -49,29 +54,38 @@ func OpenDb() error {
 	}
 
 	fmt.Printf("%s size: %v\n", app.DBPath, fi.Size())
-	return nil
+	return err
 }
 
-// func ListAccountCategories() ([]string, error) {
-// 	var account_categories []string
-// 	db := app.Db
+func ListAccounts() ([]string, error) {
+	var accounts []string
+	db := app.Db
 
-// 	rows, err := db.Query("Select AccountCategory from AccountCategories Order by id;")
-// 	if err != nil {
-// 		return account_categories, err
-// 	}
+	rows, err := db.Query("Select id, AccountName, AccountNameAtCRA from Accounts order by AccountName;")
+	if err != nil {
+		return accounts, err
+	}
 
-// 	for rows.Next() {
-// 		var account_category string
-// 		if err = rows.Scan(&account_category); err != nil {
-// 			return account_categories, err
-// 		}
-// 		account_categories = append(account_categories, account_category)
-// 	}
+	for rows.Next() {
+		var account_id string
+		var accountname string
+		var accountname_at_cra string
+		if err = rows.Scan(&account_id, &accountname, &accountname_at_cra); err != nil {
+			return accounts, err
+		}
 
-// 	if err = rows.Err(); err != nil {
-// 		return account_categories, err
-// 	}
+		account := account_id
+		account += ","
+		account += accountname
+		account += ","
+		account += accountname_at_cra
 
-// 	return account_categories, nil
-// }
+		accounts = append(accounts, account)
+	}
+
+	if err = rows.Err(); err != nil {
+		return accounts, err
+	}
+
+	return accounts, err
+}

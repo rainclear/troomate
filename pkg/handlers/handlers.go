@@ -1,9 +1,12 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
+	"strings"
 
 	"github.com/rainclear/troomate/pkg/config"
+	"github.com/rainclear/troomate/pkg/dbm"
 	"github.com/rainclear/troomate/pkg/models"
 	"github.com/rainclear/troomate/pkg/render"
 )
@@ -37,7 +40,21 @@ func (m *Repository) About(w http.ResponseWriter, r *http.Request) {
 }
 
 func (m *Repository) Accounts(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, "accounts.page.html", &models.TemplateData{})
+	accounts, err := dbm.ListAccounts()
+	if err != nil {
+		log.Fatal("Db Error")
+	}
+
+	stringMap := make(map[string]string)
+	for _, account := range accounts {
+		account_info := strings.Split(account, ",")
+		accound_id := account_info[0]
+		stringMap[accound_id] = account
+	}
+
+	render.RenderTemplate(w, "accounts.page.html", &models.TemplateData{
+		StringMap: stringMap,
+	})
 }
 
 func (m *Repository) NewAccount(w http.ResponseWriter, r *http.Request) {

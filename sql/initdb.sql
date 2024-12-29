@@ -2,7 +2,7 @@
 CREATE TABLE Owners       (
   id                      INTEGER PRIMARY KEY,
   OwnerName               VARCHAR(512) UNIQUE NOT NULL,
-  OwnerBirthDate          DATE NOT NULL Default '1900-01-01',
+  BirthDate               DATE NOT NULL Default '1900-01-01',
   TFSAStartDate           DATE NOT NULL Default '2009-01-01',
   TFSAEligibleDate        DATE NOT NULL Default '2009-01-01',
   Notes                   TEXT

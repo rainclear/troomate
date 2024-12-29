@@ -27,20 +27,25 @@ func main() {
 	render.NewTemplates(&app)
 	dbm.NewDbm(&app)
 
-	// err := dbm.OpenDb()
-	// defer dbm.CloseDb()
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
+	err := dbm.OpenDb()
+	defer dbm.CloseDb()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(app.Owner)
+	fmt.Println("Number of Account: ", len(app.Accounts))
+	for _, account := range app.Accounts {
+        fmt.Println(account)
+    }
 
 	log.Println("Starting application on port: ", portNumber)
-	fmt.Println("Account: ", len(app.Accounts))
 
 	srv := &http.Server{
 		Addr:    portNumber,
 		Handler: routes(&app),
 	}
 
-	err := srv.ListenAndServe()
+	err = srv.ListenAndServe()
 	log.Fatal(err)
 }
