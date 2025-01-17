@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -32,11 +33,11 @@ func NewHandlers(r *Repository) {
 }
 
 func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, "home.page.html", &models.TemplateData{})
+	render.RenderTemplate(w, r, "home.page.html", &models.TemplateData{})
 }
 
 func (m *Repository) About(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, "about.page.html", &models.TemplateData{})
+	render.RenderTemplate(w, r, "about.page.html", &models.TemplateData{})
 }
 
 func (m *Repository) Accounts(w http.ResponseWriter, r *http.Request) {
@@ -52,11 +53,43 @@ func (m *Repository) Accounts(w http.ResponseWriter, r *http.Request) {
 		stringMap[accound_id] = account
 	}
 
-	render.RenderTemplate(w, "accounts.page.html", &models.TemplateData{
+	render.RenderTemplate(w, r, "accounts.page.html", &models.TemplateData{
 		StringMap: stringMap,
 	})
 }
 
 func (m *Repository) NewAccount(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, "new_account.page.html", &models.TemplateData{})
+	render.RenderTemplate(w, r, "new_account.page.html", &models.TemplateData{})
+}
+
+func (m *Repository) PostNewAccount(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var accountname = ""
+	var accountname_at_cra = ""
+
+	for key, value := range r.Form {
+		fmt.Printf("%s = %s\n", key, value)
+		if key == "inputAccountName" {
+			accountname = value[0]
+		}
+		if key == "inputAccountNameAtCRA" {
+			accountname_at_cra = value[0]
+		}
+	}
+
+	if accountname != "" && accountname_at_cra != "" {
+		err = dbm.AddNewAccount(accountname, accountname_at_cra)
+
+		if err != nil {
+			log.Fatal(err)
+		} else {
+			fmt.Printf("accountname: %s, accountname_at_cra: %s\n", accountname, accountname_at_cra)
+		}
+	}
+
+	Repo.Accounts(w, r)
 }
