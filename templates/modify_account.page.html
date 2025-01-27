@@ -9,7 +9,7 @@
         </div>
         <div class="row">
             <form action="new_account" method="post" class="row g-3">
-                <input type="hidden" name="csrf_token" value="{{.CSRFToken}}"/>
+                <input type="hidden" name="csrf_token" value="{{ $.CSRFToken }}"/>
                 <div class="col-md-6">
                     <label for="inputAccountName" class="form-label">Account Name</label>
                     <input type="text" class="form-control" name="inputAccountName" placeholder="Account Name">

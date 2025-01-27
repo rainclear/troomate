@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strings"
+	"strconv"
 
 	"github.com/rainclear/troomate/pkg/config"
 	"github.com/rainclear/troomate/pkg/dbm"
@@ -46,20 +46,19 @@ func (m *Repository) Accounts(w http.ResponseWriter, r *http.Request) {
 		log.Fatal("Db Error")
 	}
 
-	stringMap := make(map[string]string)
+	accountNameMap := make(map[int64]string)
 	for _, account := range accounts {
-		account_info := strings.Split(account, ",")
-		accound_id := account_info[0]
-		stringMap[accound_id] = account
+		accound_id := account.ID
+		accountNameMap[accound_id] = account.AccountName
 	}
 
 	render.RenderTemplate(w, r, "accounts.page.html", &models.TemplateData{
-		StringMap: stringMap,
+		IntKeyMap: accountNameMap,
 	})
 }
 
 func (m *Repository) NewAccount(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, r, "new_account.page.html", &models.TemplateData{})
+	render.RenderTemplate(w, r, "modify_account.page.html", &models.TemplateData{})
 }
 
 func (m *Repository) PostNewAccount(w http.ResponseWriter, r *http.Request) {
@@ -91,5 +90,38 @@ func (m *Repository) PostNewAccount(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	Repo.Accounts(w, r)
+	http.Redirect(w, r, "accounts", http.StatusSeeOther)
+}
+
+func (m *Repository) DeleteAnAccount(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var accound_id int64
+
+	for key, value := range r.Form {
+		fmt.Printf("%s = %s\n", key, value)
+		if key == "id" {
+			num, err := strconv.ParseInt(value[0], 10, 64)
+			if err != nil {
+				log.Fatal(err)
+				return
+			}
+			accound_id = num
+		}
+	}
+
+	if accound_id > 0 {
+		err = dbm.DeleteAnAccount(accound_id)
+		if err != nil {
+			log.Fatal(err)
+			return
+		} else {
+			fmt.Printf("account id to be deleted: %d\n", accound_id)
+		}
+	}
+
+	http.Redirect(w, r, "accounts", http.StatusSeeOther)
 }

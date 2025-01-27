@@ -34,10 +34,6 @@ func main() {
 	}
 
 	fmt.Println(app.Owner)
-	fmt.Println("Number of Account: ", len(app.Accounts))
-	for _, account := range app.Accounts {
-        fmt.Println(account)
-    }
 
 	log.Println("Starting application on port: ", portNumber)
 

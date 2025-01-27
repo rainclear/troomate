@@ -1,15 +1,34 @@
 {{template "base" .}}
 
+{{define "header"}}
+    <title>Accounts</title>
+{{end}}
+
 {{define "content"}}
     <div class="container">
         <div class="row">
             <div class="col">
                 <h1>List of Accounts.</h1>
-                <p>
-                    {{ range $key, $value := .StringMap }}
-                        <li>{{ $value }}</li>
+                <table border="1">
+                    <tr>
+                        <th>ID</th>
+                        <th>Account Name</th>
+                        <th>Action</th>
+                    </tr>
+                    {{ range $key, $value := .IntKeyMap }}
+                    <tr>
+                        <td>{{ $key }}</td>
+                        <td>{{ $value }}</td>
+                        <td>
+                            <form action="delete_an_account" method="post" style="display:inline;">
+                                <input type="hidden" name="csrf_token" value="{{ $.CSRFToken }}"/>
+                                <input type="hidden" name="id" value="{{ $key }}">
+                                <button type="submit">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
                     {{ end }}
-                </p>
+                </table>
             </div>
         </div>
         <div class="row">

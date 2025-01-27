@@ -6,6 +6,7 @@ type TemplateData struct {
 	IntMap    map[string]int
 	FloatMap  map[string]float32
 	Data      map[string]interface{}
+	IntKeyMap map[int64]string
 	CSRFToken string
 	Flash     string
 	Warning   string

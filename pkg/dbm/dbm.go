@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"strconv"
 
 	"github.com/rainclear/troomate/pkg/config"
+	"github.com/rainclear/troomate/pkg/models"
 )
 
 var app *config.AppConfig
@@ -49,12 +49,6 @@ func OpenDb() error {
 		log.Fatal(err)
 	}
 
-	accounts, err := ListAccounts()
-	if err != nil {
-		return err
-	}
-	app.Accounts = accounts
-
 	fi, err := os.Stat(app.DBPath)
 	if err != nil {
 		return err
@@ -64,32 +58,22 @@ func OpenDb() error {
 	return err
 }
 
-func ListAccounts() ([]string, error) {
-	var accounts []string
+func ListAccounts() ([]models.Account, error) {
+	var accounts []models.Account
+
 	db := app.Db
 
-	rows, err := db.Query("Select id, OwnerId, AccountName, AccountNameAtCRA from Accounts order by AccountName;")
+	rows, err := db.Query("Select id, AccountName, AccountNameAtCRA from Accounts order by AccountName;")
 	if err != nil {
 		return accounts, err
 	}
 	defer rows.Close()
 
 	for rows.Next() {
-		var account_id string
-		var owner_id string
-		var accountname string
-		var accountname_at_cra string
-		if err = rows.Scan(&account_id, &owner_id, &accountname, &accountname_at_cra); err != nil {
+		var account models.Account
+		if err = rows.Scan(&account.ID, &account.AccountName, &account.AccountNameAtCRA); err != nil {
 			return accounts, err
 		}
-
-		account := account_id
-		account += ","
-		account += owner_id
-		account += ","
-		account += accountname
-		account += ","
-		account += accountname_at_cra
 
 		accounts = append(accounts, account)
 	}
@@ -110,16 +94,16 @@ func AddNewAccount(accountname string, accountname_at_cra string) error {
 	}
 	defer rows.Close()
 
-	var next_account_id = 0
+	var max_account_id int64
+	var next_account_id int64
+	max_account_id = 0
+	next_account_id = 0
 	for rows.Next() {
-		var account_id string
-		if err = rows.Scan(&account_id); err != nil {
+		if err = rows.Scan(&max_account_id); err != nil {
 			return err
 		}
-
-		max_account_id, _ := strconv.Atoi(account_id)
-		next_account_id = 1 + max_account_id
 	}
+	next_account_id = 1 + max_account_id
 
 	if err := rows.Err(); err != nil {
 		log.Fatal(err)
@@ -144,68 +128,58 @@ func AddNewAccount(accountname string, accountname_at_cra string) error {
 	return err
 }
 
-func UpdateAnAccount(accountid_ int, accountname_ string, accountname_at_cra_ string) error {
-	db := app.Db
+// func UpdateAnAccount(accountid_ int64, accountname_ string, accountname_at_cra_ string) error {
+// 	db := app.Db
 
-	rows, err := db.Query("Select AccountName, AccountNameAtCRA from Accounts where id=?;", accountid_)
-	if err != nil {
-		return err
-	}
-	defer rows.Close()
+// 	rows, err := db.Query("Select AccountName, AccountNameAtCRA from Accounts where id=?;", accountid_)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	defer rows.Close()
 
-	var accountname string
-	var accountname_at_cra string
-	for rows.Next() {
-		if err = rows.Scan(&accountname, &accountname_at_cra); err != nil {
-			log.Fatal(err)
-		}
-	}
+// 	var accountname string
+// 	var accountname_at_cra string
+// 	for rows.Next() {
+// 		if err = rows.Scan(&accountname, &accountname_at_cra); err != nil {
+// 			log.Fatal(err)
+// 		}
+// 	}
 
-	if err := rows.Err(); err != nil {
-		log.Fatal(err)
-	}
+// 	if err := rows.Err(); err != nil {
+// 		log.Fatal(err)
+// 	}
 
-	if accountname == accountname_ && accountname_at_cra == accountname_at_cra_ {
-		return nil
-	}
+// 	if accountname == accountname_ && accountname_at_cra == accountname_at_cra_ {
+// 		return nil
+// 	}
 
-	fmt.Printf("Update Accounts set AccountName=%s, AccountNameAtCRA=%s where id=%d;\n", accountname, accountname_at_cra, accountid_)
-	_, err = db.Exec("Update Accounts set AccountName=?, AccountNameAtCRA=? where id=?;", accountname, accountname_at_cra, accountid_)
+// 	fmt.Printf("Update Accounts set AccountName=%s, AccountNameAtCRA=%s where id=%d;\n", accountname, accountname_at_cra, accountid_)
+// 	_, err = db.Exec("Update Accounts set AccountName=?, AccountNameAtCRA=? where id=?;", accountname, accountname_at_cra, accountid_)
 
-	return err
-}
+// 	return err
+// }
 
 // Delete an account and all related transactions
-func DeleteAnAccount(accountname string, accountname_at_cra string) error {
+func DeleteAnAccount(accountId int64) error {
 	db := app.Db
 
-	rows, err := db.Query("Select id from Accounts order by id Desc Limit 1;")
+	stmt, err := db.Prepare("Delete from Accounts Where id = ?;")
 	if err != nil {
-		return err
+		log.Fatal(err)
 	}
-	defer rows.Close()
+	defer stmt.Close()
 
-	var next_account_id = 0
-	for rows.Next() {
-		var account_id string
-		if err = rows.Scan(&account_id); err != nil {
-			log.Fatal(err)
-		}
-
-		max_account_id, _ := strconv.Atoi(account_id)
-		next_account_id = 1 + max_account_id
-	}
-
-	if err := rows.Err(); err != nil {
+	result, err := stmt.Exec(accountId)
+	if err != nil {
 		log.Fatal(err)
 	}
 
-	if next_account_id > 0 {
-		fmt.Printf("Insert Into Accounts (id, OwnerId, AccountName, AccountNameAtCRA) Values(%d,%d,'%s','%s');\n", next_account_id, 1, accountname, accountname_at_cra)
-		_, err = db.Exec("Insert Into Accounts (id, OwnerId, AccountName, AccountNameAtCRA) Values(?,?,?,?);", next_account_id, 1, accountname, accountname_at_cra)
-	} else {
-		err = sql.ErrNoRows
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		log.Fatal(err)
 	}
+
+	fmt.Printf("Number of rows deleted: %d\n", rowsAffected)
 
 	return err
 }
