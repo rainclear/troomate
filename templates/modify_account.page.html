@@ -4,12 +4,16 @@
     <div class="container">
         <div class="row">
             <div class="col">
-                <h1>Add a New Account or Edit an Existing Account</h1>
+                <title>{{if .IsEdit}}Edit Account{{else}}Add Account{{end}}</title>
+                <h1>{{if .IsEdit}}Edit an Existing Account{{else}}Add a New Account{{end}}</h1>
             </div>
         </div>
         <div class="row">
-            <form action="new_account" method="post" class="row g-3">
-                <input type="hidden" name="csrf_token" value="{{ $.CSRFToken }}"/>
+            <form action="{{if .IsEdit}}/edit_an_account{{else}}/new_account{{end}}" method="post" class="row g-3">
+                <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}"/>
+                {{if .IsEdit}}
+                <input type="hidden" name="id" value="{{.Account.ID}}">
+                {{end}}
                 <div class="col-md-6">
                     <label for="inputAccountName" class="form-label">Account Name</label>
                     <input type="text" class="form-control" name="inputAccountName" placeholder="Account Name">

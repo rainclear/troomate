@@ -15,17 +15,26 @@
                         <th>Account Name</th>
                         <th>Action</th>
                     </tr>
+                    <p>Debug: {{ .IntKeyMap }}</p>
+                    {{ range $key, $value := .IntKeyMap }}
+                        <p>Key: {{ $key }}, Value: {{ $value }}</p>
+                    {{ end }}
                     {{ range $key, $value := .IntKeyMap }}
                     <tr>
                         <td>{{ $key }}</td>
                         <td>{{ $value }}</td>
                         <td>
                             <form action="delete_an_account" method="post" style="display:inline;">
-                                <input type="hidden" name="csrf_token" value="{{ $.CSRFToken }}"/>
+                                <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}"/>
                                 <input type="hidden" name="id" value="{{ $key }}">
                                 <button type="submit">Delete</button>
                             </form>
                         </td>
+                        <td>
+                            <form action="modify_account?id={{ $key }}" method="get" style="display:inline;">
+                                <button type="submit">Edit</button>
+                            </form>
+                        </td>                        
                     </tr>
                     {{ end }}
                 </table>

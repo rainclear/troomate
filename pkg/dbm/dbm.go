@@ -58,6 +58,24 @@ func OpenDb() error {
 	return err
 }
 
+func GetAccountInfo(accountId int64) (models.Account, error) {
+	var account models.Account
+	db := app.Db
+
+	// Fetch account details for the given ID
+	row := db.QueryRow("SELECT id, AccountName, Institution, AccountNumber, AccountNameAtCRA, AccountType, AccountPurpose FROM accounts WHERE id = ?", accountId)
+	err := row.Scan(&account.ID, &account.AccountName, &account.Institution, &account.AccountNumber, &account.AccountNameAtCRA, &account.AccountType, &account.AccountPurpose)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			fmt.Println("No record found")
+		} else {
+			fmt.Println("Query error:", err)
+		}
+	}
+
+	return account, err
+}
+
 func ListAccounts() ([]models.Account, error) {
 	var accounts []models.Account
 
@@ -128,37 +146,6 @@ func AddNewAccount(accountname string, accountname_at_cra string) error {
 	return err
 }
 
-// func UpdateAnAccount(accountid_ int64, accountname_ string, accountname_at_cra_ string) error {
-// 	db := app.Db
-
-// 	rows, err := db.Query("Select AccountName, AccountNameAtCRA from Accounts where id=?;", accountid_)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	defer rows.Close()
-
-// 	var accountname string
-// 	var accountname_at_cra string
-// 	for rows.Next() {
-// 		if err = rows.Scan(&accountname, &accountname_at_cra); err != nil {
-// 			log.Fatal(err)
-// 		}
-// 	}
-
-// 	if err := rows.Err(); err != nil {
-// 		log.Fatal(err)
-// 	}
-
-// 	if accountname == accountname_ && accountname_at_cra == accountname_at_cra_ {
-// 		return nil
-// 	}
-
-// 	fmt.Printf("Update Accounts set AccountName=%s, AccountNameAtCRA=%s where id=%d;\n", accountname, accountname_at_cra, accountid_)
-// 	_, err = db.Exec("Update Accounts set AccountName=?, AccountNameAtCRA=? where id=?;", accountname, accountname_at_cra, accountid_)
-
-// 	return err
-// }
-
 // Delete an account and all related transactions
 func DeleteAnAccount(accountId int64) error {
 	db := app.Db
@@ -166,20 +153,44 @@ func DeleteAnAccount(accountId int64) error {
 	stmt, err := db.Prepare("Delete from Accounts Where id = ?;")
 	if err != nil {
 		log.Fatal(err)
+		return err
 	}
 	defer stmt.Close()
 
 	result, err := stmt.Exec(accountId)
 	if err != nil {
 		log.Fatal(err)
+		return err
 	}
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
 		log.Fatal(err)
+		return err
 	}
 
 	fmt.Printf("Number of rows deleted: %d\n", rowsAffected)
+	return err
+}
 
+func UpdateAnAccount(accountid_ int64, accountname_ string, accountname_at_cra_ string) error {
+	db := app.Db
+
+	fmt.Printf("Update Accounts set AccountName=%s, AccountNameAtCRA=%s where id=%d;\n", accountname_, accountname_at_cra_, accountid_)
+
+	stmt, err := db.Prepare("Update Accounts set AccountName=?, AccountNameAtCRA=? where id=?;")
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+	defer stmt.Close()
+
+	rowsAffected, err := stmt.Exec(accountname_, accountname_at_cra_, accountid_)
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+
+	fmt.Printf("Number of rows updated: %d\n", rowsAffected)
 	return err
 }

@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"text/template"
 
 	"github.com/rainclear/troomate/pkg/config"
 	"github.com/rainclear/troomate/pkg/dbm"
@@ -57,14 +58,15 @@ func (m *Repository) Accounts(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func (m *Repository) NewAccount(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, r, "modify_account.page.html", &models.TemplateData{})
-}
+// func (m *Repository) NewAccount(w http.ResponseWriter, r *http.Request) {
+// 	render.RenderTemplate(w, r, "modify_account.page.html", &models.TemplateData{})
+// }
 
 func (m *Repository) PostNewAccount(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
 		log.Fatal(err)
+		return
 	}
 
 	var accountname = ""
@@ -93,10 +95,67 @@ func (m *Repository) PostNewAccount(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "accounts", http.StatusSeeOther)
 }
 
+func (m *Repository) ModifyAccount(w http.ResponseWriter, r *http.Request) {
+	// err := r.ParseForm()
+	// if err != nil {
+	// 	log.Fatal(err)
+	// 	return
+	// }
+
+	// var accound_id int64
+	// for key, value := range r.Form {
+	// 	fmt.Printf("%s = %s\n", key, value)
+	// 	if key == "id" {
+	// 		num, err := strconv.ParseInt(value[0], 10, 64)
+	// 		if err != nil {
+	// 			log.Fatal(err)
+	// 			return
+	// 		}
+	// 		accound_id = num
+	// 	}
+	// }
+
+	id := r.URL.Query().Get("id")
+
+	var account models.Account
+	isEdit := false
+
+	if id != "" {
+		accound_id, err := strconv.ParseInt(id, 10, 64)
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
+
+		account, err = dbm.GetAccountInfo(accound_id)
+
+		if err != nil {
+			http.Error(w, "Account not found", http.StatusNotFound)
+			return
+		}
+		isEdit = true
+	} else {
+		// For adding a new account, use an empty account struct
+		account = models.Account{}
+		isEdit = false
+	}
+
+	// Render the form
+	tmpl := template.Must(template.ParseFiles("templates/modify_account.page.html"))
+	tmpl.Execute(w, struct {
+		Account models.Account
+		IsEdit  bool
+	}{
+		Account: account,
+		IsEdit:  isEdit,
+	})
+}
+
 func (m *Repository) DeleteAnAccount(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
 		log.Fatal(err)
+		return
 	}
 
 	var accound_id int64
@@ -120,6 +179,63 @@ func (m *Repository) DeleteAnAccount(w http.ResponseWriter, r *http.Request) {
 			return
 		} else {
 			fmt.Printf("account id to be deleted: %d\n", accound_id)
+		}
+	}
+
+	http.Redirect(w, r, "accounts", http.StatusSeeOther)
+}
+
+func (m *Repository) EditAnAccount(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
+	var accound_id int64
+	var accountname = ""
+	var accountname_at_cra = ""
+
+	for key, value := range r.Form {
+		fmt.Printf("%s = %s\n", key, value)
+		if key == "id" {
+			num, err := strconv.ParseInt(value[0], 10, 64)
+			if err != nil {
+				log.Fatal(err)
+				return
+			}
+			accound_id = num
+		}
+		if key == "inputAccountName" {
+			accountname = value[0]
+		}
+		if key == "inputAccountNameAtCRA" {
+			accountname_at_cra = value[0]
+		}
+	}
+
+	var account models.Account
+
+	if accound_id > 0 {
+		account, err = dbm.GetAccountInfo(accound_id)
+
+		if err != nil {
+			http.Error(w, "Account not found", http.StatusNotFound)
+			return
+		}
+	} else {
+		http.Error(w, "Account Id not existing", http.StatusNotFound)
+		return
+	}
+
+	if accountname != "" && accountname != account.AccountName &&
+		accountname_at_cra != "" && accountname_at_cra != account.AccountNameAtCRA {
+		err = dbm.UpdateAnAccount(accound_id, accountname, accountname_at_cra)
+
+		if err != nil {
+			log.Fatal(err)
+		} else {
+			fmt.Printf("accountname: %s, accountname_at_cra: %s\n", accountname, accountname_at_cra)
 		}
 	}
 
