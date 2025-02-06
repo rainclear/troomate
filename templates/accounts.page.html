@@ -27,9 +27,9 @@
                             </form>
                         </td>
                         <td>
-                            <form action="modify_account?id={{ $key }}" method="get" style="display:inline;">
-                                <button type="submit">Edit</button>
-                            </form>
+                            <a href="modify_account?id={{ $key | urlquery }}">
+                                <button type="button">Edit</button>
+                            </a>
                         </td>                        
                     </tr>
                     {{ end }}

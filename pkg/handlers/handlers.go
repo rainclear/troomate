@@ -116,11 +116,11 @@ func (m *Repository) ModifyAccount(w http.ResponseWriter, r *http.Request) {
 	// 	}
 	// }
 
-	log.Printf("In ModifyAccount...")
-
 	id := r.URL.Query().Get("id")
 	var account models.Account
 	isEdit := false
+
+	log.Printf("ModifyAccount, id=%s", id)
 
 	if id != "" {
 		accound_id, err := strconv.ParseInt(id, 10, 64)
@@ -141,8 +141,9 @@ func (m *Repository) ModifyAccount(w http.ResponseWriter, r *http.Request) {
 		isEdit = false
 	}
 
+	log.Printf("AccountName:%s, AccountNameAtCRA:%s", account.AccountName, account.AccountNameAtCRA)
 	// Render the form
-	tmpl := template.Must(template.ParseFiles("templates/modify_account.page.html"))
+	tmpl := template.Must(template.ParseFiles("modify_account.page.html"))
 	tmpl.Execute(w, struct {
 		Account models.Account
 		IsEdit  bool
@@ -150,40 +151,6 @@ func (m *Repository) ModifyAccount(w http.ResponseWriter, r *http.Request) {
 		Account: account,
 		IsEdit:  isEdit,
 	})
-}
-
-func (m *Repository) DeleteAnAccount(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseForm()
-	if err != nil {
-		log.Fatal(err)
-		return
-	}
-
-	var accound_id int64
-
-	for key, value := range r.Form {
-		fmt.Printf("%s = %s\n", key, value)
-		if key == "id" {
-			num, err := strconv.ParseInt(value[0], 10, 64)
-			if err != nil {
-				log.Fatal(err)
-				return
-			}
-			accound_id = num
-		}
-	}
-
-	if accound_id > 0 {
-		err = dbm.DeleteAnAccount(accound_id)
-		if err != nil {
-			log.Fatal(err)
-			return
-		} else {
-			fmt.Printf("account id to be deleted: %d\n", accound_id)
-		}
-	}
-
-	http.Redirect(w, r, "accounts", http.StatusSeeOther)
 }
 
 func (m *Repository) EditAnAccount(w http.ResponseWriter, r *http.Request) {
@@ -237,6 +204,40 @@ func (m *Repository) EditAnAccount(w http.ResponseWriter, r *http.Request) {
 			log.Fatal(err)
 		} else {
 			fmt.Printf("accountname: %s, accountname_at_cra: %s\n", accountname, accountname_at_cra)
+		}
+	}
+
+	http.Redirect(w, r, "accounts", http.StatusSeeOther)
+}
+
+func (m *Repository) DeleteAnAccount(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
+	var accound_id int64
+
+	for key, value := range r.Form {
+		fmt.Printf("%s = %s\n", key, value)
+		if key == "id" {
+			num, err := strconv.ParseInt(value[0], 10, 64)
+			if err != nil {
+				log.Fatal(err)
+				return
+			}
+			accound_id = num
+		}
+	}
+
+	if accound_id > 0 {
+		err = dbm.DeleteAnAccount(accound_id)
+		if err != nil {
+			log.Fatal(err)
+			return
+		} else {
+			fmt.Printf("account id to be deleted: %d\n", accound_id)
 		}
 	}
 

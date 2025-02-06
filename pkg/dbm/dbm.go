@@ -63,8 +63,9 @@ func GetAccountInfo(accountId int64) (models.Account, error) {
 	db := app.Db
 
 	// Fetch account details for the given ID
-	row := db.QueryRow("SELECT id, AccountName, Institution, AccountNumber, AccountNameAtCRA, AccountType, AccountPurpose FROM accounts WHERE id = ?", accountId)
-	err := row.Scan(&account.ID, &account.AccountName, &account.Institution, &account.AccountNumber, &account.AccountNameAtCRA, &account.AccountType, &account.AccountPurpose)
+	//	row := db.QueryRow("SELECT id, AccountName, Institution, AccountNumber, AccountNameAtCRA, AccountType, AccountPurpose FROM accounts WHERE id = ?", accountId)
+	row := db.QueryRow("SELECT id, AccountName, AccountNameAtCRA FROM accounts WHERE id = ?", accountId)
+	err := row.Scan(&account.ID, &account.AccountName, &account.AccountNameAtCRA)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			fmt.Println("No record found")
