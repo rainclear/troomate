@@ -58,9 +58,10 @@ func (m *Repository) Accounts(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// func (m *Repository) NewAccount(w http.ResponseWriter, r *http.Request) {
-// 	render.RenderTemplate(w, r, "modify_account.page.html", &models.TemplateData{})
-// }
+func (m *Repository) NewAccount(w http.ResponseWriter, r *http.Request) {
+	log.Printf("In NewAccount...")
+	render.RenderTemplate(w, r, "new_account.page.html", &models.TemplateData{})
+}
 
 func (m *Repository) PostNewAccount(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
@@ -115,8 +116,9 @@ func (m *Repository) ModifyAccount(w http.ResponseWriter, r *http.Request) {
 	// 	}
 	// }
 
-	id := r.URL.Query().Get("id")
+	log.Printf("In ModifyAccount...")
 
+	id := r.URL.Query().Get("id")
 	var account models.Account
 	isEdit := false
 
@@ -128,7 +130,6 @@ func (m *Repository) ModifyAccount(w http.ResponseWriter, r *http.Request) {
 		}
 
 		account, err = dbm.GetAccountInfo(accound_id)
-
 		if err != nil {
 			http.Error(w, "Account not found", http.StatusNotFound)
 			return

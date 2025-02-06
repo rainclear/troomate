@@ -1,0 +1,75 @@
+{{template "base" .}}
+
+{{define "content"}}
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <title>Add an Account</title>
+                <h1>Add a New Account</h1>
+            </div>
+        </div>
+        <div class="row">
+            <form action="new_account" method="post" class="row g-3">
+                <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}"/>
+                <div class="col-md-6">
+                    <label for="inputAccountName" class="form-label">Account Name</label>
+                    <input type="text" class="form-control" name="inputAccountName" placeholder="Account Name">
+                </div>
+                <div class="col-md-3">
+                    <label for="inputInstitution" class="form-label">Institution</label>
+                    <input type="text" class="form-control" name="inputInstitution" placeholder="Institution">
+                </div>
+                <div class="col-md-3">
+                    <label for="inputAccountNumber" class="form-label">Account Number</label>
+                    <input type="text" class="form-control" name="inputAccountNumber" placeholder="Account Number">
+                </div>
+                <div class="col-md-6">
+                    <label for="inputAccountNameAtCRA" class="form-label">Account Name at CRA</label>
+                    <input type="text" class="form-control" name="inputAccountNameAtCRA" placeholder="Account Name at CRA">
+                </div>
+                <div class="col-md-3">
+                    <label for="inputAccountType" class="form-label">Account Type</label>
+                    <select name="inputAccountType" class="form-select">
+                        <option>Savings</option>
+                        <option>GIC</option>
+                        <option>Investment</option>
+                        <option>Fibonacci</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="inputAccountPurpose" class="form-label">Account Purpose</label>
+                    <select name="inputAccountPurpose" class="form-select">
+                        <option>Daily</option>
+                        <option>Short Term</option>
+                        <option>Long Term</option>
+                        <option>Retirement</option>
+                        <option>Rebirth in Heaven</option>
+                    </select>
+                </div>
+                <div class="date col-md-6">
+                    <label for="inputOpeningDate" class="form-label">Opening Date</label>
+                    <input type="date" class="form-control date" name="inputOpeningDate">
+                </div>
+                <div class="col-md-6">
+                    <label for="inputClosingDate" class="form-label">Closing Date</label>
+                    <input type="date" class="form-control date" name="inputClosingDate">
+                </div>
+                <div class="col-12">
+                    <label for="notes" class="form-label">Notes for the Account</label>
+                    <textarea class="form-control" name="inputNotes" rows="2"></textarea>
+                </div>                                
+                <div class="col-12">
+                  <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <a href="accounts">List Accounts</a>
+            </div>
+            <div class="col-12">
+                <a href=".">Home</a>
+            </div>
+        </div>
+    </div>
+{{end}}

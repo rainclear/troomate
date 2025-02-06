@@ -15,10 +15,6 @@
                         <th>Account Name</th>
                         <th>Action</th>
                     </tr>
-                    <p>Debug: {{ .IntKeyMap }}</p>
-                    {{ range $key, $value := .IntKeyMap }}
-                        <p>Key: {{ $key }}, Value: {{ $value }}</p>
-                    {{ end }}
                     {{ range $key, $value := .IntKeyMap }}
                     <tr>
                         <td>{{ $key }}</td>
