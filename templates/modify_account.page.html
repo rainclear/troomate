@@ -4,19 +4,17 @@
     <div class="container">
         <div class="row">
             <div class="col">
-                <title>{{if .IsEdit}}Edit Account{{else}}Add Account{{end}}</title>
-                <h1>{{if .IsEdit}}Edit an Existing Account{{else}}Add a New Account{{end}}</h1>
+                <title>Edit an Account</title>
+                <h1>Edit an Account</h1>
             </div>
         </div>
         <div class="row">
-            <form action="{{if .IsEdit}}/edit_an_account{{else}}/new_account{{end}}" method="post" class="row g-3">
+            <form action="edit_an_account" method="post" class="row g-3">
                 <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}"/>
-                {{if .IsEdit}}
-                <input type="hidden" name="id" value="{{.Account.ID}}">
-                {{end}}
+                <input type="hidden" name="id" value="{{.AnAccount.ID}}">
                 <div class="col-md-6">
                     <label for="inputAccountName" class="form-label">Account Name</label>
-                    <input type="text" class="form-control" name="inputAccountName" placeholder="Account Name">
+                    <input type="text" class="form-control" name="inputAccountName" placeholder="{{.AnAccount.AccountName}}">
                 </div>
                 <div class="col-md-3">
                     <label for="inputInstitution" class="form-label">Institution</label>
@@ -28,7 +26,7 @@
                 </div>
                 <div class="col-md-6">
                     <label for="inputAccountNameAtCRA" class="form-label">Account Name at CRA</label>
-                    <input type="text" class="form-control" name="inputAccountNameAtCRA" placeholder="Account Name at CRA">
+                    <input type="text" class="form-control" name="inputAccountNameAtCRA" placeholder="{{.AnAccount.AccountNameAtCRA}}">
                 </div>
                 <div class="col-md-3">
                     <label for="inputAccountType" class="form-label">Account Type</label>

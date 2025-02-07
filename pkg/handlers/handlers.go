@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-	"text/template"
 
 	"github.com/rainclear/troomate/pkg/config"
 	"github.com/rainclear/troomate/pkg/dbm"
@@ -97,28 +96,9 @@ func (m *Repository) PostNewAccount(w http.ResponseWriter, r *http.Request) {
 }
 
 func (m *Repository) ModifyAccount(w http.ResponseWriter, r *http.Request) {
-	// err := r.ParseForm()
-	// if err != nil {
-	// 	log.Fatal(err)
-	// 	return
-	// }
-
-	// var accound_id int64
-	// for key, value := range r.Form {
-	// 	fmt.Printf("%s = %s\n", key, value)
-	// 	if key == "id" {
-	// 		num, err := strconv.ParseInt(value[0], 10, 64)
-	// 		if err != nil {
-	// 			log.Fatal(err)
-	// 			return
-	// 		}
-	// 		accound_id = num
-	// 	}
-	// }
 
 	id := r.URL.Query().Get("id")
 	var account models.Account
-	isEdit := false
 
 	log.Printf("ModifyAccount, id=%s", id)
 
@@ -134,23 +114,26 @@ func (m *Repository) ModifyAccount(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Account not found", http.StatusNotFound)
 			return
 		}
-		isEdit = true
 	} else {
 		// For adding a new account, use an empty account struct
 		account = models.Account{}
-		isEdit = false
 	}
 
 	log.Printf("AccountName:%s, AccountNameAtCRA:%s", account.AccountName, account.AccountNameAtCRA)
-	// Render the form
-	tmpl := template.Must(template.ParseFiles("modify_account.page.html"))
-	tmpl.Execute(w, struct {
-		Account models.Account
-		IsEdit  bool
-	}{
-		Account: account,
-		IsEdit:  isEdit,
+
+	render.RenderTemplate(w, r, "modify_account.page.html", &models.TemplateData{
+		AnAccount: account,
 	})
+
+	// // Render the form
+	// tmpl := template.Must(template.ParseFiles("modify_account.page.html"))
+	// tmpl.Execute(w, struct {
+	// 	Account models.Account
+	// 	IsEdit  bool
+	// }{
+	// 	Account: account,
+	// 	IsEdit:  isEdit,
+	// })
 }
 
 func (m *Repository) EditAnAccount(w http.ResponseWriter, r *http.Request) {

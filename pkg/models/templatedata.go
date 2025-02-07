@@ -7,6 +7,8 @@ type TemplateData struct {
 	FloatMap  map[string]float32
 	Data      map[string]interface{}
 	IntKeyMap map[int64]string
+	Accounts  map[int64]Account
+	AnAccount Account
 	CSRFToken string
 	Flash     string
 	Warning   string
