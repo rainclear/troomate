@@ -121,19 +121,9 @@ func (m *Repository) ModifyAccount(w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("AccountName:%s, AccountNameAtCRA:%s", account.AccountName, account.AccountNameAtCRA)
 
-	render.RenderTemplate(w, r, "modify_account.page.html", &models.TemplateData{
+	render.RenderTemplate(w, r, "edit_account.page.html", &models.TemplateData{
 		AnAccount: account,
 	})
-
-	// // Render the form
-	// tmpl := template.Must(template.ParseFiles("modify_account.page.html"))
-	// tmpl.Execute(w, struct {
-	// 	Account models.Account
-	// 	IsEdit  bool
-	// }{
-	// 	Account: account,
-	// 	IsEdit:  isEdit,
-	// })
 }
 
 func (m *Repository) EditAnAccount(w http.ResponseWriter, r *http.Request) {
@@ -179,8 +169,8 @@ func (m *Repository) EditAnAccount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if accountname != "" && accountname != account.AccountName &&
-		accountname_at_cra != "" && accountname_at_cra != account.AccountNameAtCRA {
+	if accountname != "" && accountname_at_cra != "" &&
+		(accountname != account.AccountName || accountname_at_cra != account.AccountNameAtCRA) {
 		err = dbm.UpdateAnAccount(accound_id, accountname, accountname_at_cra)
 
 		if err != nil {
